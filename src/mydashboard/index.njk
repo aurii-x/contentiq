@@ -14,13 +14,13 @@ title: "Dashboard"
 <div class="kpi-grid">
   <div class="kpi-card">
     <p class="kpi-label">Reach vs. Average Post</p>
-    <p class="kpi-value abs-hide">—</p>
-    <p class="kpi-value rel-hide" style="display:none;">{{ (posts | sum("impressions")) or 0 }}</p>
+    <p class="kpi-value abs-hide">{{ (posts | sum("impressions")) or 0 }}</p>
+    <p class="kpi-value rel-hide" id="kpi-reach-index" style="display:none;" data-avg="{{ stats.avgImpressions }}" data-posts="{{ posts.length }}">—</p>
   </div>
   <div class="kpi-card">
     <p class="kpi-label">Engagement vs. Average Post</p>
-    <p class="kpi-value abs-hide">—</p>
-    <p class="kpi-value rel-hide" style="display:none;">{{ (posts | sum("engagements")) or 0 }}</p>
+    <p class="kpi-value abs-hide">{{ (posts | sum("engagements")) or 0 }}</p>
+    <p class="kpi-value rel-hide" id="kpi-engagement-index" style="display:none;" data-avg="{{ stats.avgEngagements }}" data-posts="{{ posts.length }}">—</p>
   </div>
   <div class="kpi-card">
     <p class="kpi-label">Avg Engagement Rate</p>
@@ -57,7 +57,7 @@ title: "Dashboard"
       {% for post in posts %}
       <tr>
         <td>{{ post.date }}</td>
-        <td><a class="post-link" href="/mydashboard/posts/{{ post.slug }}/">{{ post.topic | truncate(35) }}</a></td>
+        <td><a class="post-link" href="/posts/{{ post.slug }}/">{{ post.topic | truncate(35) }}</a></td>
         <td><span class="type-pill">{{ post.contentType }}</span></td>
         <td>{{ post.pillar }}</td>
         <td class="abs-hide">{{ post.impressions }}</td>
@@ -135,6 +135,19 @@ title: "Dashboard"
         cell.textContent = '—';
       }
     });
+
+    // Top KPI cards: relative view shows "per post" average instead of the
+    // full account total, a more size-agnostic number than the raw sum.
+    var reachIndexEl = document.getElementById('kpi-reach-index');
+    var engagementIndexEl = document.getElementById('kpi-engagement-index');
+    if (reachIndexEl) {
+      var avgImp = parseFloat(reachIndexEl.dataset.avg) || 0;
+      reachIndexEl.textContent = avgImp > 0 ? Math.round(avgImp) + ' / post' : '—';
+    }
+    if (engagementIndexEl) {
+      var avgEng = parseFloat(engagementIndexEl.dataset.avg) || 0;
+      engagementIndexEl.textContent = avgEng > 0 ? avgEng.toFixed(1) + ' / post' : '—';
+    }
 
     function setView(view){
       var showAbs = view === 'absolute';
