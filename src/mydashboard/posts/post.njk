@@ -4,11 +4,11 @@ pagination:
   data: posts
   size: 1
   alias: post
-permalink: "/posts/{{ post.slug }}/"
+permalink: "/mydashboard/posts/{{ post.slug }}/"
 eleventyComputed:
   title: "{{ post.topic }}"
 ---
-<a class="back-link" href="/">&larr; Back to all posts</a>
+<a class="back-link" href="/mydashboard/">&larr; Back to all posts</a>
 
 <p class="eyebrow">{{ post.pillar }}</p>
 <h1 class="page-title">{{ post.topic }}</h1>

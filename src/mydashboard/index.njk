@@ -57,7 +57,7 @@ title: "Dashboard"
       {% for post in posts %}
       <tr>
         <td>{{ post.date }}</td>
-        <td><a class="post-link" href="/posts/{{ post.slug }}/">{{ post.topic | truncate(35) }}</a></td>
+        <td><a class="post-link" href="/mydashboard/posts/{{ post.slug }}/">{{ post.topic | truncate(35) }}</a></td>
         <td><span class="type-pill">{{ post.contentType }}</span></td>
         <td>{{ post.pillar }}</td>
         <td class="abs-hide">{{ post.impressions }}</td>
