@@ -204,21 +204,28 @@
       <div>
         <p class="prose" style="margin-bottom:20px;">If you're interested in seeing ContentIQ on your own content, fill out the form below and I'll follow up personally to set up a demo and get you access.</p>
 
-        <form class="signup-form" id="signup-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <form class="signup-form" id="signup-form" action="https://docs.google.com/forms/d/e/1FAIpQLSerq-5OxHf3xlaOSJdmKGKvgPeVb1jk3H8Dw6dKhbjyiafFWQ/formResponse" method="POST" target="hidden_iframe">
           <label for="name">Name</label>
-          <input type="text" id="name" name="name" required>
+          <input type="text" id="name" name="entry.183927542" required>
 
           <label for="email">Email</label>
-          <input type="email" id="email" name="email" required>
+          <input type="email" id="email" name="entry.1844858356" required>
+
+          <label for="company">Company</label>
+          <input type="text" id="company" name="entry.599595963">
+
+          <label for="jobtitle">Job title</label>
+          <input type="text" id="jobtitle" name="entry.365073860">
 
           <label for="phone">Phone number</label>
-          <input type="tel" id="phone" name="phone">
+          <input type="tel" id="phone" name="entry.1230407602">
 
           <label for="purpose">What are you hoping to use ContentIQ for?</label>
-          <textarea id="purpose" name="purpose" required></textarea>
+          <textarea id="purpose" name="entry.1919330921" required></textarea>
 
           <button type="submit">Request Access</button>
         </form>
+        <iframe name="hidden_iframe" style="display:none;"></iframe>
         <p class="form-note" id="form-note">You'll get a personal email back, usually within a day or two.</p>
         <p class="form-success" id="form-success">Thanks, that's on its way to me. I'll be in touch shortly.</p>
       </div>
@@ -294,31 +301,28 @@
     });
   })();
 
-  // Sign-up form: Formspree submission via fetch, so we can show an inline
-  // success message instead of redirecting away from the page.
+  // Sign-up form: Google Forms doesn't support a clean fetch-based
+  // submission (no CORS response), so this submits normally but targets
+  // a hidden iframe, keeping the visitor on this page. The iframe's load
+  // event is used as a best-effort signal that the submission went
+  // through, Google Forms doesn't give a way to truly confirm success
+  // from outside its own domain, so this is optimistic, not guaranteed.
   (function(){
     var form = document.getElementById('signup-form');
     var note = document.getElementById('form-note');
     var success = document.getElementById('form-success');
+    var iframe = document.querySelector('iframe[name="hidden_iframe"]');
+    var submitted = false;
 
-    form.addEventListener('submit', function(e){
-      e.preventDefault();
-      var data = new FormData(form);
-      fetch(form.action, {
-        method: 'POST',
-        body: data,
-        headers: { 'Accept': 'application/json' }
-      }).then(function(response){
-        if (response.ok) {
-          form.style.display = 'none';
-          note.style.display = 'none';
-          success.style.display = 'block';
-        } else {
-          note.textContent = 'Something went wrong, try again or email directly.';
-        }
-      }).catch(function(){
-        note.textContent = 'Something went wrong, try again or email directly.';
-      });
+    form.addEventListener('submit', function(){
+      submitted = true;
+    });
+
+    iframe.addEventListener('load', function(){
+      if (!submitted) return; // ignore the iframe's initial blank load
+      form.style.display = 'none';
+      note.style.display = 'none';
+      success.style.display = 'block';
     });
   })();
 
