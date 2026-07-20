@@ -4,6 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ title or "Dashboard" }} · ContentIQ</title>
+<script>
+  // Runs immediately, before charts or anything else, so stored display
+  // preferences are already applied to <html> by the time any chart reads
+  // its colors. Without this, charts would always construct using the
+  // untouched default color, since the full settings script runs later,
+  // after the page's own content and charts.
+  (function(){
+    var root = document.documentElement;
+    function get(key){ try { return localStorage.getItem(key); } catch(e){ return null; } }
+
+    var themeMode = get('contentiq-theme-mode') || 'auto';
+    if (themeMode === 'light' || themeMode === 'dark') {
+      root.setAttribute('data-theme', themeMode);
+    } else {
+      var cached = null;
+      try { cached = JSON.parse(localStorage.getItem('contentiq-suntimes') || 'null'); } catch(e){}
+      if (cached && cached.forDate === new Date().toDateString()) {
+        var now = Date.now(), sunrise = new Date(cached.sunrise).getTime(), sunset = new Date(cached.sunset).getTime();
+        root.setAttribute('data-theme', (now < sunrise || now > sunset) ? 'dark' : 'light');
+      } else {
+        var h = new Date().getHours();
+        root.setAttribute('data-theme', (h >= 19 || h < 7) ? 'dark' : 'light');
+      }
+    }
+
+    root.setAttribute('data-color', get('contentiq-color') || 'sage');
+    root.setAttribute('data-colorblind', get('contentiq-colorblind') || 'off');
+    root.setAttribute('data-font', get('contentiq-font') || 'default');
+    root.setAttribute('data-width', get('contentiq-width') || 'normal');
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
