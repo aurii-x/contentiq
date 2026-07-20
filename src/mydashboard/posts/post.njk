@@ -80,7 +80,7 @@ eleventyComputed:
 
 {% if post.history.length > 1 %}
 <script>
-  var history = {{ post.history | json | safe }};
+  var postHistory = {{ post.history | json | safe }};
   var styles = getComputedStyle(document.documentElement);
   var accent = styles.getPropertyValue('--accent').trim();
   var inkSoft = styles.getPropertyValue('--ink-soft').trim();
@@ -89,10 +89,10 @@ eleventyComputed:
   var postChart = new Chart(document.getElementById('postChart'), {
     type: 'line',
     data: {
-      labels: history.map(function(h){ return h.pulled_at; }),
+      labels: postHistory.map(function(h){ return h.pulled_at; }),
       datasets: [
-        { label: 'Impressions', data: history.map(function(h){ return h.impressions; }), borderColor: accent, backgroundColor: accent, tension: 0.3, yAxisID: 'y' },
-        { label: 'Engagements', data: history.map(function(h){ return h.engagements; }), borderColor: inkSoft, backgroundColor: inkSoft, tension: 0.3, yAxisID: 'y1' }
+        { label: 'Impressions', data: postHistory.map(function(h){ return h.impressions; }), borderColor: accent, backgroundColor: accent, tension: 0.3, yAxisID: 'y' },
+        { label: 'Engagements', data: postHistory.map(function(h){ return h.engagements; }), borderColor: inkSoft, backgroundColor: inkSoft, tension: 0.3, yAxisID: 'y1' }
       ]
     },
     options: {
@@ -114,16 +114,16 @@ eleventyComputed:
     var applyCustomBtn = document.getElementById('apply-custom-range');
 
     function filterHistory(rangeValue, customStart, customEnd){
-      if (rangeValue === 'all') return history;
+      if (rangeValue === 'all') return postHistory;
       if (rangeValue === 'custom') {
-        if (!customStart || !customEnd) return history;
+        if (!customStart || !customEnd) return postHistory;
         var s = new Date(customStart), e = new Date(customEnd);
-        return history.filter(function(h){ var d = new Date(h.pulled_at); return d >= s && d <= e; });
+        return postHistory.filter(function(h){ var d = new Date(h.pulled_at); return d >= s && d <= e; });
       }
       var days = parseInt(rangeValue, 10);
       var cutoff = new Date();
       cutoff.setDate(cutoff.getDate() - days);
-      return history.filter(function(h){ return new Date(h.pulled_at) >= cutoff; });
+      return postHistory.filter(function(h){ return new Date(h.pulled_at) >= cutoff; });
     }
 
     function applyRange(rangeValue, customStart, customEnd){
