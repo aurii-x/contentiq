@@ -101,9 +101,16 @@ title: "Dashboard"
   var inkSoft = styles.getPropertyValue('--ink-soft').trim();
   var line = styles.getPropertyValue('--line').trim();
 
+  // Fixed multi-color palette for this chart specifically, deliberately
+  // NOT tied to the theme's accent color, stays constant regardless of
+  // which color palette or theme is selected, so each pillar bar stays
+  // visually distinct.
+  var pillarPalette = ['#3E5C55', '#2A5C7A', '#A5680A', '#7A3B5C', '#5F7A3E', '#8A5C3E', '#3E5C7A', '#7A5C3E'];
+  var pillarColors = pillarLabels.map(function(_, i){ return pillarPalette[i % pillarPalette.length]; });
+
   new Chart(document.getElementById('pillarChart'), {
     type: 'bar',
-    data: { labels: pillarLabels, datasets: [{ label: 'Avg Engagement Rate %', data: pillarData, backgroundColor: accent, borderRadius: 6 }] },
+    data: { labels: pillarLabels, datasets: [{ label: 'Avg Engagement Rate %', data: pillarData, backgroundColor: pillarColors, borderRadius: 6 }] },
     options: {
       responsive: true,
       plugins: { legend: { display: false } },
